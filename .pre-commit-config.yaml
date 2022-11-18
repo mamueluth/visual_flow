@@ -52,6 +52,24 @@ repos:
         language: system
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
 
+  - repo: local
+    hooks:
+      - id: cppcheck
+        name: cppcheck
+        description: Static code analysis of cpp code files with cppcheck.
+        entry: cppcheck
+        language: system
+        files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
+
+  - repo: local
+    hooks:
+      - id: cpplint
+        name: cpplint
+        description: Lint/static code checker for cpp files with cpplint.
+        entry: clang-tidy
+        language: system
+        files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|proto|vert)$
+
   # Spellcheck in comments and docs
   # skipping of *.svg files is not working...
   - repo: https://github.com/codespell-project/codespell
