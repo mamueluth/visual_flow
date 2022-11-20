@@ -3,6 +3,7 @@
 
 # cmake
 CMakeLists.txt.user*
+build-*/**
 
 *~
 *.autosave

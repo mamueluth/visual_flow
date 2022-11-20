@@ -24,8 +24,8 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+# Additional dependencies with special requirements
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -36,38 +36,17 @@ set(PROJECT_SOURCES
         app/window/mainwindow.ui
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(visual_flow
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET visual_flow APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(visual_flow SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(visual_flow
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCES}
+)
 
-target_link_libraries(visual_flow PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_compile_definitions(${PROJECT_NAME} PUBLIC HAS_OPENCV)
 
-set_target_properties(visual_flow PROPERTIES
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Widgets)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
-target_compile_definitions(visual_flow PUBLIC HAS_OPENCV)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(visual_flow)
-endif()
